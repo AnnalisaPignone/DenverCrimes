@@ -53,5 +53,108 @@ public class EventsDao {
 			return null ;
 		}
 	}
+	
+	public List<String> getAllCategorie(){
+		String sql = "SELECT DISTINCT(offense_category_id) "
+				+ "FROM events" ;
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			List<String> list = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				try {
+					list.add(res.getString("offense_category_id"));
+				} catch (Throwable t) {
+					t.printStackTrace();
+					System.out.println(res.getInt("id"));
+				}
+			}
+			
+			conn.close();
+			return list ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+	
+	public List<String> getVertici(String categoria, int mese){
+		String sql = "SELECT DISTINCT(offense_type_id) "
+				+ "FROM EVENTS "
+				+ "WHERE offense_category_id=? AND MONTH(reported_date)=?" ;
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			st.setString(1, categoria);
+			st.setInt(2, mese);
+			
+			List<String> list = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				try {
+					list.add(res.getString("offense_type_id"));
+				} catch (Throwable t) {
+					t.printStackTrace();
+					System.out.println(res.getInt("id"));
+				}
+			}
+			
+			conn.close();
+			return list ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+	
+	public double getPesoArco( int mese, String v1, String v2){
+		String sql = "SELECT COUNT(DISTINCT(e1.neighborhood_id)) AS pesoArco "
+				+ "FROM EVENTS e1, EVENTS e2 "
+				+ "WHERE e1.offense_type_id=? AND e2.offense_type_id=? AND e1.neighborhood_id=e2.neighborhood_id AND MONTH(e1.reported_date)=? AND MONTH(e2.reported_date)=?" ;
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			st.setString(1, v1);
+			st.setString(2, v2);
+			st.setInt(3, mese);
+			st.setInt(4, mese);
+			
+			double peso=0; 
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				try {
+					peso= (res.getDouble("pesoArco"));
+				} catch (Throwable t) {
+					t.printStackTrace();
+					System.out.println(res.getInt("id"));
+				}
+			}
+			
+			conn.close();
+			return peso ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1.0 ;
+		}
+	}
 
 }

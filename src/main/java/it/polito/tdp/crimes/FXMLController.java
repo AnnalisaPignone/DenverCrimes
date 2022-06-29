@@ -5,8 +5,11 @@
 package it.polito.tdp.crimes;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.crimes.model.Arco;
 import it.polito.tdp.crimes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +20,8 @@ import javafx.scene.control.TextArea;
 public class FXMLController {
 	
 	private Model model;
+	List<Arco> archi= new ArrayList<Arco>(); 
+	
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -25,16 +30,16 @@ public class FXMLController {
     private URL location;
 
     @FXML // fx:id="boxCategoria"
-    private ComboBox<?> boxCategoria; // Value injected by FXMLLoader
+    private ComboBox<String> boxCategoria; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxMese"
-    private ComboBox<?> boxMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnAnalisi"
     private Button btnAnalisi; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxArco"
-    private ComboBox<?> boxArco; // Value injected by FXMLLoader
+    private ComboBox<Arco> boxArco; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnPercorso"
     private Button btnPercorso; // Value injected by FXMLLoader
@@ -44,12 +49,16 @@ public class FXMLController {
 
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
-
+    	txtResult.appendText(this.model.calcolaPercorso(boxArco.getValue()).toString()+"\n"); 
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	this.model.creaGrafo(boxCategoria.getValue(), boxMese.getValue());
+    	txtResult.appendText("# VERTICI: " + this.model.nVertici() + "\n");
+    	txtResult.appendText("# ARCHI: " + this.model.nArchi()+ "\n");
+    	txtResult.appendText(this.model.getArchiDaStampare().toString()+"\n");
+    	boxArco.getItems().addAll(this.model.getArchiDaStampare()); 
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -65,5 +74,12 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	List <String> categorie = new ArrayList <String>(this.model.getAllCategorie()); 
+    	boxCategoria.getItems().addAll(categorie); 
+    	List<Integer> mesi= new ArrayList<>(); 
+    	for (int i=1; i<13; i++) {
+    		mesi.add(i); 
+    	}
+    	boxMese.getItems().addAll(mesi); 
     }
 }
